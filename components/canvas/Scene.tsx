@@ -1,0 +1,122 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import { Canvas } from '@react-three/fiber'
+import { useSceneContext } from '@/providers/SceneProvider'
+
+// ─── Performance tier detection ──────────────────────────────────────────────
+// Determines max particle count and render quality at mount time.
+
+type PerformanceTier = 'low' | 'medium' | 'high'
+
+function detectPerformanceTier(): PerformanceTier {
+  if (typeof window === 'undefined') return 'high'
+  const cores = navigator.hardwareConcurrency ?? 4
+  const isMobile = /mobile|android|iphone|ipad|tablet/i.test(navigator.userAgent)
+  if (isMobile || cores <= 4) return 'low'
+  if (cores <= 8) return 'medium'
+  return 'high'
+}
+
+export const PARTICLE_COUNT: Record<PerformanceTier, number> = {
+  low: 8_000,
+  medium: 18_000,
+  high: 30_000,
+}
+
+// ─── Scene context bridge ─────────────────────────────────────────────────────
+// Lives inside the Canvas so it has access to the R3F context.
+// Reads SceneConfig and applies it to Three.js state.
+
+function SceneEnvironment() {
+  const { config } = useSceneContext()
+
+  // Phase 3 will swap this for the real ParticleVoid.
+  // For now just an ambient light so Three.js has something to render
+  // and we can confirm the canvas layer is working.
+  return (
+    <>
+      <ambientLight intensity={0.1} />
+      <fog attach="fog" args={['#000000', 80, 200]} />
+    </>
+  )
+}
+
+// ─── Scene canvas ─────────────────────────────────────────────────────────────
+
+export function Scene() {
+  const [tier, setTier] = useState<PerformanceTier>('high')
+  const [mounted, setMounted] = useState(false)
+  const { cursorNDC } = useSceneContext()
+
+  // Detect performance tier client-side only
+  useEffect(() => {
+    setTier(detectPerformanceTier())
+    setMounted(true)
+  }, [])
+
+  // Track cursor NDC coordinates for GLSL uniforms (used in Step 3+)
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      cursorNDC.current = [
+        (e.clientX / window.innerWidth) * 2 - 1,
+        -(e.clientY / window.innerHeight) * 2 + 1,
+      ]
+    }
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [cursorNDC])
+
+  // Don't render canvas during SSR — Three.js is browser-only
+  if (!mounted) return null
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: 'none', // clicks pass through to page content
+      }}
+    >
+      <Canvas
+        gl={{
+          antialias: tier !== 'low',
+          alpha: true,           // transparent so void black comes from CSS body
+          powerPreference: 'high-performance',
+          stencil: false,
+          depth: true,
+        }}
+        camera={{
+          fov: 60,
+          near: 0.1,
+          far: 1000,
+          position: [0, 0, 5],
+        }}
+        dpr={tier === 'low' ? [1, 1] : [1, 2]}
+        performance={{ min: 0.5 }} // adaptive quality under load
+        style={{ width: '100%', height: '100%' }}
+      >
+        <SceneEnvironment />
+
+        {/* Dev performance monitor — removed in production build */}
+        {process.env.NODE_ENV === 'development' && <DevPerf />}
+      </Canvas>
+    </div>
+  )
+}
+
+// ─── Dev performance overlay ──────────────────────────────────────────────────
+// Lazy-loaded so it's tree-shaken in production.
+
+function DevPerf() {
+  const [Perf, setPerf] = useState<React.ComponentType<{ position?: string }> | null>(null)
+
+  useEffect(() => {
+    import('r3f-perf').then((m) => setPerf(() => m.Perf as React.ComponentType<{ position?: string }>)).catch(() => null)
+  }, [])
+
+  if (!Perf) return null
+  return <Perf position="top-left" />
+}
