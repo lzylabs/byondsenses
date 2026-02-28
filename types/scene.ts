@@ -32,11 +32,11 @@ export interface SceneConfig {
 // Default scene — used when no page has called useScene()
 export const DEFAULT_SCENE_CONFIG: SceneConfig = {
   formation: 'default',
-  density: 0.5,
+  density: 0.3,        // reduced — subtle ambient, not overwhelming
   colorTemp: 'cool',
   cameraZ: -10,
-  particleSize: 0.5,
-  speed: 0.3,
+  particleSize: 0.32,  // smaller dots, more star-like
+  speed: 0.25,         // slightly slower drift
   cursorInfluence: 120,
   transitionDuration: 1200,
 }

@@ -26,7 +26,7 @@
   --accent-gold:    #fbbf24;             /* sacred gold — CTA moments */
 
   /* ── Typography ── */
-  --font-display:   var(--font-cinzel),       Georgia, serif;
+  --font-display:   var(--font-orbitron),      system-ui, sans-serif;
   --font-body:      var(--font-space-grotesk), system-ui, sans-serif;
   --font-mono:      var(--font-space-mono),   'Courier New', monospace;
 
@@ -119,8 +119,8 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: var(--tracking-display);
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1.1;
 }

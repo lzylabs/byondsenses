@@ -51,16 +51,29 @@ export function Scene() {
     setMounted(true)
   }, [])
 
-  // Track cursor NDC coordinates for GLSL uniforms (used in Step 3+)
+  // Track cursor / touch position → NDC coords for GLSL uniforms
   useEffect(() => {
+    const toNDC = (clientX: number, clientY: number): [number, number] => [
+      (clientX / window.innerWidth) * 2 - 1,
+      -(clientY / window.innerHeight) * 2 + 1,
+    ]
+
     const handleMouseMove = (e: MouseEvent) => {
-      cursorNDC.current = [
-        (e.clientX / window.innerWidth) * 2 - 1,
-        -(e.clientY / window.innerHeight) * 2 + 1,
-      ]
+      cursorNDC.current = toNDC(e.clientX, e.clientY)
     }
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 0) return
+      const t = e.touches[0]
+      cursorNDC.current = toNDC(t.clientX, t.clientY)
+    }
+
     window.addEventListener('mousemove', handleMouseMove, { passive: true })
-    return () => window.removeEventListener('mousemove', handleMouseMove)
+    window.addEventListener('touchmove', handleTouchMove, { passive: true })
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('touchmove', handleTouchMove)
+    }
   }, [cursorNDC])
 
   // Don't render canvas during SSR — Three.js is browser-only

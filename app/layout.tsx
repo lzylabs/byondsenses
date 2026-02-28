@@ -1,15 +1,15 @@
 import type { Metadata, Viewport } from 'next'
-import { Cinzel, Space_Grotesk, Space_Mono } from 'next/font/google'
+import { Orbitron, Space_Grotesk, Space_Mono } from 'next/font/google'
 import { Providers } from '@/providers/Providers'
 import './globals.css'
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
-const cinzel = Cinzel({
+const orbitron = Orbitron({
   subsets: ['latin'],
-  variable: '--font-cinzel',
+  variable: '--font-orbitron',
   display: 'swap',
-  weight: ['400', '600', '700', '900'],
+  weight: ['400', '500', '600', '700', '800', '900'],
 })
 
 const spaceGrotesk = Space_Grotesk({
@@ -87,7 +87,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cinzel.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`}
+      className={`${orbitron.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`}
     >
       <body>
         {/* Skip-to-content link for keyboard/screen reader users */}

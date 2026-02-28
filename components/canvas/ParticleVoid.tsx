@@ -22,14 +22,16 @@ const FORMATION_INDEX: Record<string, number> = {
 
 // ─── Color temperature → [primary, secondary, rare] hex ──────────────────────
 
+// Colors are intentionally muted/desaturated — particles should feel like
+// distant light, not neon signs. Full saturation looked too noisy in practice.
 const COLOR_PALETTES: Record<ColorTemp, [string, string, string]> = {
-  cool:   ['#00d4ff', '#c084fc', '#f0abfc'],
-  warm:   ['#f97316', '#fbbf24', '#fde68a'],
-  purple: ['#a855f7', '#ec4899', '#f9a8d4'],
-  gold:   ['#fbbf24', '#f97316', '#fef3c7'],
-  ice:    ['#bfdbfe', '#818cf8', '#e0e7ff'],
-  storm:  ['#7c3aed', '#1e40af', '#60a5fa'],
-  rose:   ['#f43f5e', '#c084fc', '#fda4af'],
+  cool:   ['#3ab5cc', '#7b5ea7', '#a98fc4'],   // muted cyan, soft violet, dusty lavender
+  warm:   ['#c47a3a', '#b89060', '#d4b896'],   // amber, sand, pale gold
+  purple: ['#7a4fa8', '#b06090', '#c4a0b8'],   // deep violet, rose, dusty pink
+  gold:   ['#c8a84b', '#b87840', '#e0d0a0'],   // antique gold, bronze, cream
+  ice:    ['#88aac8', '#7080b8', '#b0bcd8'],   // steel blue, slate, silver
+  storm:  ['#5a3a8a', '#2a3868', '#6080a8'],   // deep purple, navy, electric blue
+  rose:   ['#b85068', '#9060a0', '#c090b0'],   // muted rose, mauve, dusty pink
 }
 
 // ─── Transition state (mutable, lives outside React) ─────────────────────────
@@ -97,11 +99,11 @@ export function ParticleVoid({ particleCount }: ParticleVoidProps) {
 
       sizes[i] = 0.4 + Math.random() * 1.6  // 0.4–2.0
 
-      // 5% chance of rare (pink) particle, rest blend primary→secondary
+      // 1.5% chance of rare particle, rest blend primary→secondary
       const r = Math.random()
-      colorMix[i] = r < 0.05
+      colorMix[i] = r < 0.015
         ? 0.92 + Math.random() * 0.08
-        : Math.pow(Math.random(), 1.5) * 0.85
+        : Math.pow(Math.random(), 2.0) * 0.75  // bias toward primary color
     }
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))

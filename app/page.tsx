@@ -13,7 +13,8 @@ export default function HomePage() {
       background: 'transparent',
     }}>
       <p style={{
-        fontFamily: 'var(--font-cinzel)',
+        fontFamily: 'var(--font-orbitron)',
+        fontWeight: 700,
         fontSize: 'clamp(0.7rem, 2vw, 1rem)',
         letterSpacing: '0.3em',
         textTransform: 'uppercase',
