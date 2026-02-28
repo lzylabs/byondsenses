@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { useSceneContext } from '@/providers/SceneProvider'
 import { ParticleVoid } from './ParticleVoid'
@@ -96,23 +96,7 @@ export function Scene() {
       >
         <SceneContents particleCount={PARTICLE_COUNT[tier]} />
 
-        {/* Dev performance monitor — removed in production build */}
-        {process.env.NODE_ENV === 'development' && <DevPerf />}
       </Canvas>
     </div>
   )
-}
-
-// ─── Dev performance overlay ──────────────────────────────────────────────────
-// Lazy-loaded so it's tree-shaken in production.
-
-function DevPerf() {
-  const [Perf, setPerf] = useState<React.ComponentType<{ position?: string }> | null>(null)
-
-  useEffect(() => {
-    import('r3f-perf').then((m) => setPerf(() => m.Perf as React.ComponentType<{ position?: string }>)).catch(() => null)
-  }, [])
-
-  if (!Perf) return null
-  return <Perf position="top-left" />
 }
