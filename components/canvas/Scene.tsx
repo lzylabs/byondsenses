@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { useSceneContext } from '@/providers/SceneProvider'
+import { ParticleVoid } from './ParticleVoid'
 
 // ─── Performance tier detection ──────────────────────────────────────────────
 // Determines max particle count and render quality at mount time.
@@ -24,20 +25,15 @@ export const PARTICLE_COUNT: Record<PerformanceTier, number> = {
   high: 30_000,
 }
 
-// ─── Scene context bridge ─────────────────────────────────────────────────────
-// Lives inside the Canvas so it has access to the R3F context.
-// Reads SceneConfig and applies it to Three.js state.
+// ─── Scene contents ───────────────────────────────────────────────────────────
+// Lives inside the Canvas — has access to the R3F / Three.js context.
 
-function SceneEnvironment() {
-  const { config } = useSceneContext()
-
-  // Phase 3 will swap this for the real ParticleVoid.
-  // For now just an ambient light so Three.js has something to render
-  // and we can confirm the canvas layer is working.
+function SceneContents({ particleCount }: { particleCount: number }) {
   return (
     <>
-      <ambientLight intensity={0.1} />
-      <fog attach="fog" args={['#000000', 80, 200]} />
+      {/* Subtle fog softens particles at distance, enhances depth */}
+      <fog attach="fog" args={['#000000', 60, 160]} />
+      <ParticleVoid particleCount={particleCount} />
     </>
   )
 }
@@ -98,7 +94,7 @@ export function Scene() {
         performance={{ min: 0.5 }} // adaptive quality under load
         style={{ width: '100%', height: '100%' }}
       >
-        <SceneEnvironment />
+        <SceneContents particleCount={PARTICLE_COUNT[tier]} />
 
         {/* Dev performance monitor — removed in production build */}
         {process.env.NODE_ENV === 'development' && <DevPerf />}
