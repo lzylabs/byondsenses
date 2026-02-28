@@ -1,0 +1,25 @@
+# Normalize line endings — prevents LF/CRLF warnings on Windows
+* text=auto eol=lf
+
+# Force LF for these file types regardless of OS
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.jsx  text eol=lf
+*.css  text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.glsl text eol=lf
+
+# Binary files — no line ending conversion
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.otf  binary
+*.glb  binary
+*.gltf text eol=lf
