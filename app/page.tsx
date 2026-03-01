@@ -15,7 +15,7 @@ export default function HomePage() {
       <p style={{
         fontFamily: 'var(--font-orbitron)',
         fontWeight: 700,
-        fontSize: 'clamp(0.7rem, 2vw, 1rem)',
+        fontSize: 'clamp(0.91rem, 2.6vw, 1.3rem)',
         letterSpacing: '0.3em',
         textTransform: 'uppercase',
         color: 'rgba(226, 232, 240, 0.35)',

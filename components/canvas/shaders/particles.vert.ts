@@ -29,6 +29,7 @@ export const vertexShader = /* glsl */ `
   uniform float uSpeed;                // global animation speed multiplier
   uniform float uParticleSize;         // global size multiplier
   uniform float uDensity;              // 0–1, fades outer particles
+  uniform float uBirthProgress;       // 0→1, particles emerge from cosmic origin
 
   // ── Varyings ───────────────────────────────────────────────────────────
   varying vec3  vColor;
@@ -172,6 +173,13 @@ export const vertexShader = /* glsl */ `
     // ── 2. Organic drift ─────────────────────────────────────────────────
     pos += organicDrift(aOffset * 5.3, t * 0.12 * uSpeed);
 
+    // ── 2.5. Birth — particles emerge from cosmic origin ─────────────────
+    // Each particle has a unique delay (aOffset.x), so they don't all
+    // appear at once — the void fills like stars igniting across the sky.
+    float birthDelay = aOffset.x * 0.5;
+    float birthEased = smoothstep(birthDelay, birthDelay + 0.5, uBirthProgress);
+    pos = mix(vec3(0.0), pos, birthEased);
+
     // ── 3. Density fade (outer particles soften) ─────────────────────────
     float spread = length(pos.xy);
     float densityFade = 1.0 - smoothstep(18.0 * uDensity, 30.0, spread);
@@ -205,7 +213,7 @@ export const vertexShader = /* glsl */ `
 
     // ── 7. Opacity ────────────────────────────────────────────────────────
     float depthFade = 1.0 - smoothstep(40.0, 85.0, -mvPos.z);
-    vOpacity = densityFade * depthFade * 0.88;
+    vOpacity = densityFade * depthFade * 0.88 * birthEased;
     if (aColorMix > 0.9) vOpacity = min(1.0, vOpacity * 1.6); // rare = brighter
 
     // ── 8. Point size with perspective attenuation ────────────────────────

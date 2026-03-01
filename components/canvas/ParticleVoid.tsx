@@ -52,6 +52,9 @@ interface ParticleVoidProps {
 export function ParticleVoid({ particleCount }: ParticleVoidProps) {
   const { config, cursorNDC } = useSceneContext()
 
+  // ── Birth animation — records clock time at first frame ────────────────
+  const birthStartRef = useRef<number | null>(null)
+
   // ── Transition ref ──────────────────────────────────────────────────────
   const transition = useRef<TransitionState>({
     prevFormation:    0,
@@ -75,6 +78,7 @@ export function ParticleVoid({ particleCount }: ParticleVoidProps) {
     uSpeed:              { value: 0.3 },
     uParticleSize:       { value: 0.5 },
     uDensity:            { value: 1.0 },
+    uBirthProgress:      { value: 0 },
   })
 
   // ── Geometry — built once at mount ─────────────────────────────────────
@@ -168,6 +172,13 @@ export function ParticleVoid({ particleCount }: ParticleVoidProps) {
 
     // Advance time
     u.uTime.value = state.clock.elapsedTime
+
+    // Birth animation — particles emerge from origin over 5 seconds
+    if (u.uBirthProgress.value < 1.0) {
+      if (birthStartRef.current === null) birthStartRef.current = state.clock.elapsedTime
+      const elapsed = state.clock.elapsedTime - birthStartRef.current
+      u.uBirthProgress.value = Math.min(1.0, elapsed / 5.0)
+    }
 
     // Sync cursor (no allocation — mutates existing Vector2)
     u.uCursorNDC.value.set(cursorNDC.current[0], cursorNDC.current[1])

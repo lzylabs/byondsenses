@@ -2,6 +2,8 @@
 
 import { SceneProvider } from './SceneProvider'
 import { Scene } from '@/components/canvas/Scene'
+import { Cursor } from '@/components/ui/Cursor'
+import { TodoList } from '@/components/ui/TodoList'
 
 /**
  * Providers — wraps the entire app with client-side context.
@@ -27,6 +29,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <div style={{ position: 'relative', zIndex: 10 }}>
         {children}
       </div>
+
+      {/* Global UI — above everything */}
+      <Cursor />
+      <TodoList />
     </SceneProvider>
   )
 }

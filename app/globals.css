@@ -187,6 +187,21 @@ a {
   background: var(--accent-dim);
 }
 
+/* ─── Custom cursor — hide OS cursor on pointer devices ─────────────────── */
+
+@media (pointer: fine) {
+  *, *::before, *::after {
+    cursor: none !important;
+  }
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+
+@keyframes bh-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* ─── Selection ──────────────────────────────────────────────────────────── */
 
 ::selection {
