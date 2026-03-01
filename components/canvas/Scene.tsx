@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { useSceneContext } from '@/providers/SceneProvider'
 import { ParticleVoid } from './ParticleVoid'
+import { PostProcessing } from './PostProcessing'
 
 // ─── Performance tier detection ──────────────────────────────────────────────
 // Determines max particle count and render quality at mount time.
@@ -34,6 +35,7 @@ function SceneContents({ particleCount }: { particleCount: number }) {
       {/* Subtle fog softens particles at distance, enhances depth */}
       <fog attach="fog" args={['#000000', 60, 160]} />
       <ParticleVoid particleCount={particleCount} />
+      <PostProcessing />
     </>
   )
 }
